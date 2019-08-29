@@ -7,8 +7,9 @@ Downloads every enabled mod from the `mod-list.json`. Just that.
 
 Simply...
 
-* change the three variables at the top of the bash script
-* make it executable: `chmod +x factorio-mod-loader.sh`
+* copy the environment example file: `cp factorio-mod-loader.env.example factorio-mod-loader.env`
+* change the three variables in `factorio-mod-loader.env`
+* make the script executable: `chmod +x factorio-mod-loader.sh`
 * run it: `./factorio-mod-loader.sh`
 
 ## Why? How?
@@ -37,5 +38,4 @@ So for a freshly installed ubuntu for example you won't need to install anything
 
 ## Know Issues
 
-* The script always downloads every mod zip file (even if it already exists and there is no newer version).
 * Potentially breaks if the json payload will change (because then the grep and sed part won't fit anymore).

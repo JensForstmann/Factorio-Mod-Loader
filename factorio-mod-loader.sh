@@ -1,11 +1,6 @@
 #!/bin/bash
 
-# folder with your mods (must contain the mod-list.json)
-MODS_FOLDER=/opt/factorio/mods
-# your factorio token (search for service-token in your player-data.json)
-TOKEN=PUT_TOKEN_HERE
-# your factorio username
-USERNAME=PUT_USERNAME_HERE
+. $(dirname "$0")/factorio-mod-loader.env
 
 enabled_mods=$(cat "$MODS_FOLDER/mod-list.json" | grep -B 1 '"enabled": true' | grep '"name"' | sed 's/\s*"name":\s*"//' | sed 's/",//' | grep -v base)
 IFS=$'\n'
@@ -17,12 +12,17 @@ do
         echo $mod: download_url: $download_url
         file_name=$(echo "$mod_info" | sed 's/"file_name":"/\n/g' | tail -1 | sed 's/".*//g')
         echo $mod: file_name: $file_name
-        wget -O "$MODS_FOLDER/$file_name" -o /dev/null "https://mods.factorio.com/$download_url?username=$USERNAME&token=$TOKEN"
-        if [[ $? -ne 0 ]];
+        if [[ -f "$MODS_FOLDER/$file_name" ]];
         then
-                echo $mod: FAILED DOWNLOADING
-                echo $mod: try again:
-                wget -O "$MODS_FOLDER/$file_name" "https://mods.factorio.com/$download_url?username=$USERNAME&token=$TOKEN"
+                echo $mod: already exist, skip downloading...
+        else
+                wget -O "$MODS_FOLDER/$file_name" -o /dev/null "https://mods.factorio.com/$download_url?username=$USERNAME&token=$TOKEN"
+                if [[ $? -ne 0 ]];
+                then
+                        echo $mod: FAILED DOWNLOADING
+                        echo $mod: try again:
+                        wget -O "$MODS_FOLDER/$file_name" "https://mods.factorio.com/$download_url?username=$USERNAME&token=$TOKEN"
+                fi
         fi
 done
 unset IFS
